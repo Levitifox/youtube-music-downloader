@@ -1,33 +1,67 @@
 {
     "name": "youtube-music-downloader",
     "version": "1.0.0",
+    "main": "dist/main.js",
     "engines": {
         "node": ">= 12"
     },
     "scripts": {
-        "build": "parcel build --public-url . src/index.ts src/index.html src/main.tsx",
-        "watch": "parcel watch --public-url . src/index.ts src/index.html src/main.tsx",
+        "build": "parcel build --target=node --public-url . src/index.ts src/index.html src/main.tsx",
+        "watch": "parcel watch --target=node --public-url . src/index.ts src/index.html src/main.tsx",
         "start": "electron dist",
-        "fmt": "prettier -w ."
+        "fmt": "prettier -w .",
+        "release": "npm run build && npx electron-builder --win"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "description": "",
+    "description": "A desktop application for downloading music from YouTube",
     "devDependencies": {
         "@babel/preset-typescript": "7.26.0",
-        "@types/electron": "^1.4.38",
-        "@types/react": "19.0.8",
-        "@types/react-dom": "19.0.3",
-        "electron": "34.0.2",
+        "@types/electron": "1.6.12",
+        "@types/react": "19.0.10",
+        "@types/react-dom": "19.0.4",
+        "electron": "34.2.0",
+        "electron-builder": "^25.1.8",
         "parcel": "2.13.3",
         "parcel-transformer-google-fonts": "github:Levitifox/parcel-transformer-google-fonts#value-range-support",
-        "prettier": "3.4.2"
+        "prettier": "3.5.1"
     },
     "dependencies": {
-        "dotenv": "^16.4.7",
-        "lottie-react": "^2.4.1",
+        "dotenv": "16.4.7",
+        "lottie-react": "2.4.1",
         "react": "19.0.0",
         "react-dom": "19.0.0"
+    },
+    "build": {
+        "appId": "com.levitifox.yt-music-downloader",
+        "productName": "YT Music Downloader",
+        "directories": {
+            "output": "release"
+        },
+        "files": [
+            "dist/**/*",
+            "node_modules/**/*",
+            "package.json"
+        ],
+        "win": {
+            "target": "nsis",
+            "icon": "src/assets/icon.ico"
+        },
+        "linux": {
+            "target": "AppImage",
+            "icon": "src/assets"
+        }
+    },
+    "targets": {
+        "node": {
+            "context": "node",
+            "includeNodeModules": {
+                "electron": false
+            },
+            "engines": {
+                "node": ">= 14"
+            }
+        }
     }
 }

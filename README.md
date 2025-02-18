@@ -18,39 +18,43 @@ A desktop application for downloading music from YouTube, built with Electron, R
 ## Installation
 
 1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/Levitifox/youtube-music-downloader
-   cd youtube-music-downloader
-   ```
+
+    ```sh
+    git clone https://github.com/Levitifox/youtube-music-downloader
+    cd youtube-music-downloader
+    ```
 
 2. **Install Python dependencies:**
-   ```sh
-   pip install yt-dlp mutagen
-   ```
+
+    ```sh
+    pip install yt-dlp mutagen
+    ```
 
 3. **Install Node.js dependencies:**
-   ```sh
-   npm install
-   ```
+    ```sh
+    npm install
+    ```
 
 ## Usage
 
 ### Development Mode
 
 1. **Start the Parcel development server:**
-   ```sh
-   npm run watch
-   ```
+
+    ```sh
+    npm run watch
+    ```
 
 2. **Run the Electron app:**
    In another terminal, execute:
-   ```sh
-   npm start
-   ```
+    ```sh
+    npm start
+    ```
 
 ### Production Build
 
 To create a packaged application:
+
 ```sh
 npm run build
 ```
