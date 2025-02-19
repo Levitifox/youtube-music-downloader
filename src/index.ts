@@ -75,19 +75,23 @@ ipcMain.on("download-link", (event, data) => {
     const { link, folder } = data;
     const scriptPath = path.join(__dirname, "download.py");
 
-    const pythonProcess = spawn("python", [scriptPath, link, folder]);
+    const pythonProcess = spawn("python", ["-u", scriptPath, link, folder]);
 
     pythonProcess.stdout.on("data", data => {
-        console.log(`Python stdout: ${data}`);
+        const message = data.toString();
+        console.log(`Python stdout: ${message}`);
+        mainWindow.webContents.send("download-console", message);
     });
 
     pythonProcess.stderr.on("data", data => {
-        console.error(`Python stderr: ${data}`);
+        const message = data.toString();
+        console.error(`Python stderr: ${message}`);
+        mainWindow.webContents.send("download-console", message);
     });
 
     pythonProcess.on("close", code => {
         console.log(`Python process exited with code ${code}`);
-        event.reply("download-complete", code);
+        mainWindow.webContents.send("download-complete", code);
     });
 });
 

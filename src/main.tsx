@@ -1,34 +1,18 @@
-import React, { useState, useEffect, KeyboardEvent } from "react";
+import React, { useState, useEffect, useRef, KeyboardEvent } from "react";
 import { createRoot } from "react-dom/client";
 import { TitleBar } from "./titlebar";
-import Lottie from "lottie-react";
-import downloadingAnimation from "./animations/downloading.json";
-import completedAnimation from "./animations/completed.json";
-import failedAnimation from "./animations/failed.json";
 
 const { ipcRenderer } = window.require("electron");
-
-interface FailedTrack {
-    trackName: string;
-    error: string;
-}
 
 function App() {
     const [link, setLink] = useState("");
     const [folder, setFolder] = useState("");
     const [processing, setProcessing] = useState(false);
     const [completeMessage, setCompleteMessage] = useState("");
-    const [failedTracks, setFailedTracks] = useState<FailedTrack[]>([]);
     const [errors, setErrors] = useState<{ link?: string; folder?: string }>({});
-    const [animationData, setAnimationData] = useState<any>(null);
-
-    useEffect(() => {
-        if (processing) {
-            setAnimationData(downloadingAnimation);
-        } else if (!processing && completeMessage) {
-            setAnimationData(completeMessage.toLowerCase().includes("complete") ? completedAnimation : failedAnimation);
-        }
-    }, [processing, completeMessage]);
+    const [consoleOutput, setConsoleOutput] = useState("");
+    const [showConsole, setShowConsole] = useState(false);
+    const outputRef = useRef<HTMLDivElement>(null);
 
     const validateInputs = () => {
         const newErrors: { link?: string; folder?: string } = {};
@@ -50,7 +34,7 @@ function App() {
     const handleProcess = () => {
         if (!validateInputs()) return;
         setCompleteMessage("");
-        setFailedTracks([]);
+        setConsoleOutput("");
         setProcessing(true);
         ipcRenderer.send("download-link", { link, folder });
     };
@@ -60,27 +44,37 @@ function App() {
     };
 
     useEffect(() => {
-        const onFailure = (_: any, data: FailedTrack) => setFailedTracks(prev => [...prev, data]);
+        if (outputRef.current) {
+            outputRef.current.scrollTop = outputRef.current.scrollHeight;
+        }
+    }, [consoleOutput]);
+
+    useEffect(() => {
+        const onConsole = (_: any, log: string) => {
+            setConsoleOutput(prev => prev + log + "\n");
+        };
+
         const onComplete = (_: any, code: number) => {
             setProcessing(false);
-            setCompleteMessage(code === 0 ? "Download complete!" : "Download failed.");
+            const msg = code === 0 ? "Download complete!" : "Download failed.";
+            setCompleteMessage(msg);
+            onConsole(null, msg);
         };
 
-        ipcRenderer.on("download-failure", onFailure);
+        const onFailure = (_: any, data: { trackName: string; error: string }) => {
+            onConsole(null, `Error in ${data.trackName}: ${data.error}`);
+        };
+
+        ipcRenderer.on("download-console", onConsole);
         ipcRenderer.on("download-complete", onComplete);
+        ipcRenderer.on("download-failure", onFailure);
 
         return () => {
-            ipcRenderer.removeListener("download-failure", onFailure);
+            ipcRenderer.removeListener("download-console", onConsole);
             ipcRenderer.removeListener("download-complete", onComplete);
+            ipcRenderer.removeListener("download-failure", onFailure);
         };
     }, []);
-
-    let animationClass = "";
-    if (processing) {
-        animationClass = "download-animation";
-    } else if (completeMessage && completeMessage.toLowerCase().includes("complete")) {
-        animationClass = "completed-animation";
-    }
 
     return (
         <div>
@@ -100,7 +94,7 @@ function App() {
                         {errors.link && <div className="error-message">{errors.link}</div>}
                     </div>
                     <div className="folder-input-container">
-                        <input type="text" id="folder-input" placeholder="Select output folder" value={folder} readOnly disabled={processing} />
+                        <input type="text" id="folder-input" placeholder="Select output folder" value={folder} disabled={processing} />
                         <button onClick={handleBrowse} disabled={processing}>
                             Browse
                         </button>
@@ -115,7 +109,12 @@ function App() {
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                             stroke="#ffffff"
-                            style={{ width: "1.5em", height: "1.5em", marginRight: "8px", marginLeft: "-5px" }}
+                            style={{
+                                width: "1.5em",
+                                height: "1.5em",
+                                marginRight: "8px",
+                                marginLeft: "-5px",
+                            }}
                         >
                             <path
                                 fillRule="evenodd"
@@ -136,32 +135,16 @@ function App() {
 
                 {completeMessage && <div className="complete-message">{completeMessage}</div>}
 
-                {failedTracks.length > 0 && (
-                    <div className="error-table-section">
-                        <table className="error-table">
-                            <thead>
-                                <tr>
-                                    <th>Track Name</th>
-                                    <th>Error</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {failedTracks.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{item.trackName}</td>
-                                        <td>{item.error}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-
-                {animationData && (
-                    <div className={`animation-container ${animationClass}`}>
-                        <Lottie animationData={animationData} loop={processing} />
-                    </div>
-                )}
+                <div className="console-output-section">
+                    <button onClick={() => setShowConsole(!showConsole)} className={showConsole ? "hide-details" : "see-details"}>
+                        {showConsole ? "Hide Details" : "See Details"}
+                    </button>
+                    {showConsole && (
+                        <div className="console-output-window" ref={outputRef}>
+                            <pre>{consoleOutput}</pre>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

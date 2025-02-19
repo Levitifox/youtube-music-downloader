@@ -7,7 +7,6 @@
 }
 
 :root {
-    /* Updated dark theme colors */
     --background-color: #181818;
     --secondary-background-color: #202020;
     --foreground-color: #e0e0e0;
@@ -399,27 +398,6 @@ body,
     font-weight: bold;
 }
 
-.error-table-section {
-    margin-top: 10px;
-    overflow: auto;
-}
-
-.error-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.error-table th,
-.error-table td {
-    border: 1px solid var(--border-color);
-    padding: var(--padding);
-    text-align: left;
-}
-
-.error-table th {
-    background-color: var(--secondary-background-color);
-}
-
 /* Process Section */
 .process-section {
     display: flex;
@@ -437,27 +415,6 @@ body,
     transition:
         background-color 0.2s ease,
         transform 0.2s ease;
-}
-
-.animation-container {
-    width: 50vw;
-    max-width: 300px;
-    aspect-ratio: 1;
-    margin: 20px auto;
-    overflow: hidden;
-}
-
-.animation-container > div {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-.animation-container.download-animation {
-    transform: scale(1.5);
-}
-
-.animation-container.completed-animation {
-    transform: scale(0.7);
 }
 
 .error-message {
@@ -481,4 +438,59 @@ body,
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Console Output Section */
+.console-output-section {
+    margin: 20px 0;
+}
+
+.console-output-section button {
+    padding: var(--padding);
+    background-color: var(--background-color);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.console-output-section button.see-details {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.console-output-section button.hide-details {
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.console-output-section button:hover {
+    background-color: var(--hover-color);
+}
+
+.console-output-section button:focus {
+    outline: none;
+}
+
+/* Console Output Window */
+.console-output-window {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0 4px 4px 4px;
+    max-height: calc(100vh - 318px);
+    overflow-y: auto;
+    padding: var(--padding);
+    text-align: left;
+    font-family: "Source Code Pro", serif;
+    font-size: 0.85rem;
+    white-space: pre-wrap;
+    scroll-behavior: smooth;
+}
+
+.console-output-window:focus {
+    outline: none;
+}
+
+.console-output-window pre {
+    margin: 0;
 }
