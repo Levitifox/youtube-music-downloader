@@ -391,7 +391,7 @@ body,
     cursor: not-allowed;
 }
 
-.complete-message {
+.download-status {
     margin: 10px 0;
     text-align: center;
     color: var(--accent-color);
@@ -477,7 +477,7 @@ body,
     background-color: var(--background-color);
     border: 1px solid var(--border-color);
     border-radius: 0 4px 4px 4px;
-    max-height: calc(100vh - 318px);
+    max-height: calc(100vh - 310px);
     overflow-y: auto;
     padding: var(--padding);
     text-align: left;
