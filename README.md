@@ -8,6 +8,8 @@ A desktop application for downloading music from YouTube, built with Electron, R
 - **MP3 Conversion:** Automatically converts downloads to MP3 format with metadata support.
 - **Cross-Platform:** Compatible with Windows, macOS, and Linux.
 
+![Preview youtube music downloader](preview.png)
+
 ## Prerequisites
 
 - **Python 3.10+**
