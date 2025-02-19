@@ -12,14 +12,23 @@ def main():
     output_template = os.path.join(output_folder, '%(title)s.%(ext)s')
     
     ydl_opts = {
-        'format': 'bestaudio/best',
-        'outtmpl': output_template,
-        'postprocessors': [{
+    'format': 'bestaudio/best',
+    'outtmpl': output_template,
+    'writethumbnail': True,
+    'postprocessors': [
+        {
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
-        }],
-    }
+        },
+        {
+            'key': 'EmbedThumbnail',
+        },
+        {
+            'key': 'FFmpegMetadata',
+        },
+    ],
+}
     
     try:
         with YoutubeDL(ydl_opts) as ydl:
