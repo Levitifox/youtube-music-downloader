@@ -7,21 +7,21 @@
 }
 
 :root {
-    --background-color: #181818;
-    --secondary-background-color: #202020;
+    --background-color: #272727;
+    --secondary-background-color: #181617;
     --foreground-color: #e0e0e0;
-    --accent-color: #ff5252;
-    --border-color: #333;
+    --accent-color: #ff4343;
+    --border-color: #4d4d4d;
     --secondary-border-color: #2a2a2a;
-    --hover-color: #2d2d2d;
-    --highlight-color: #ff7a7a;
+    --hover-color: #2f2f2f;
+    --highlight-color: #ff2551;
 
     --font-family: "Nunito Sans", sans-serif;
     --secondary-font-family: "Atkinson Hyperlegible", sans-serif;
     --font-size-base: 14px;
     --font-weight-base: 400;
     --padding: 8px;
-    --border-radius: 8px;
+    --border-radius: 4px;
     --scrollbar-width: 8px;
 }
 
