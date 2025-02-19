@@ -1,10 +1,11 @@
 import { app, BrowserWindow, dialog, ipcMain } from "electron";
-import { spawn } from "child_process";
+import { spawn, ChildProcess } from "child_process";
 import * as path from "path";
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
 
 let mainWindow: BrowserWindow;
+let currentPythonProcess: ChildProcess | null = null;
 
 app.setAboutPanelOptions({
     applicationName: "Youtube Music Downloader",
@@ -75,24 +76,33 @@ ipcMain.on("download-link", (event, data) => {
     const { link, folder } = data;
     const scriptPath = path.join(__dirname, "download.py");
 
-    const pythonProcess = spawn("python", ["-u", scriptPath, link, folder]);
+    currentPythonProcess = spawn("python", ["-u", scriptPath, link, folder]);
 
-    pythonProcess.stdout.on("data", data => {
+    currentPythonProcess.stdout?.on("data", data => {
         const message = data.toString();
         console.log(`Python stdout: ${message}`);
         mainWindow.webContents.send("download-console", message);
     });
 
-    pythonProcess.stderr.on("data", data => {
+    currentPythonProcess.stderr?.on("data", data => {
         const message = data.toString();
         console.error(`Python stderr: ${message}`);
         mainWindow.webContents.send("download-console", message);
     });
 
-    pythonProcess.on("close", code => {
+    currentPythonProcess.on("close", code => {
         console.log(`Python process exited with code ${code}`);
         mainWindow.webContents.send("download-complete", code);
+        currentPythonProcess = null;
     });
+});
+
+ipcMain.on("cancel-download", event => {
+    if (currentPythonProcess) {
+        currentPythonProcess.kill();
+        currentPythonProcess = null;
+        event.reply("download-complete", -1);
+    }
 });
 
 app.on("window-all-closed", () => {
