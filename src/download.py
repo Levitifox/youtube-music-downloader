@@ -13,12 +13,22 @@ def main():
     
     ydl_opts = {
         'format': 'bestaudio/best',
+        'ignoreerrors': True,
         'outtmpl': output_template,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
+        'writethumbnail': True,
+        'postprocessors': [
+            {
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            },
+            {
+                'key': 'EmbedThumbnail',
+            },
+            {
+                'key': 'FFmpegMetadata',
+            },
+        ],
     }
     
     try:
